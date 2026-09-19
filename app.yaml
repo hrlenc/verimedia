@@ -1,0 +1,46 @@
+# DigitalOcean App Platform spec (optional — the README's step-by-step
+# guide uses the web dashboard instead, which needs no CLI). If you prefer
+# infrastructure-as-code, install `doctl`, edit the two placeholders below,
+# then run:
+#
+#   doctl apps create --spec app.yaml
+#
+# To update an existing app instead of creating a new one:
+#
+#   doctl apps update <app-id> --spec app.yaml
+
+name: verimedia-backend
+region: sgp1   # Singapore — closest DO region to the Philippines; change if you like
+services:
+  - name: backend
+    github:
+      repo: YOUR_GITHUB_USERNAME/verimedia-backend   # <-- edit this
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    environment_slug: python
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    run_command: gunicorn -w 2 -b 0.0.0.0:8080 --timeout 120 run:app
+    envs:
+      - key: VERIMEDIA_ENV
+        value: "production"
+      - key: VERIMEDIA_DEBUG
+        value: "false"
+      - key: VERIMEDIA_ALLOWED_ORIGINS
+        value: "*"   # tighten to chrome-extension://<your-extension-id> after publishing
+      - key: VERIMEDIA_DATABASE_URL
+        value: "${db.DATABASE_URL}"   # only needed if you add the db below
+    health_check:
+      http_path: /api/v1/health
+
+# Uncomment to add a managed Postgres database for persistent history
+# (recommended — App Platform containers have no persistent disk, so a
+# plain SQLite file resets on every redeploy/restart without this):
+#
+# databases:
+#   - name: db
+#     engine: PG
+#     production: false   # true = HA production tier (more expensive)
+#     version: "16"

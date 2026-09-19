@@ -1,0 +1,27 @@
+# Optional production upgrades — install these on a machine with normal
+# internet access (NOT required to run the core system). They unlock the
+# "deep model" and "live retrieval" code paths that are already wired into
+# the pipelines but gracefully no-op without them.
+#
+#   pip install -r requirements.txt -r requirements-production.txt
+#
+# -- Real deep-learning deepfake backbone (EfficientNet-GRU per the thesis) --
+# torch>=2.2
+# torchvision>=0.17
+# timm>=0.9            # EfficientNet backbones
+# transformers>=4.40   # if you prefer a HF pretrained deepfake classifier
+#
+# -- Faster / higher-quality face landmarking (needs internet on first run
+#    to fetch the .task model bundle from Google) --
+# mediapipe>=0.10
+#
+# -- Sentence-transformer embeddings for misinformation semantic similarity --
+# sentence-transformers>=2.6
+#
+# -- Live retrieval backends for the misinformation pipeline --
+# duckduckgo-search>=6.0
+#
+# -- Horizontally-scaled async task queue (gunicorn + psycopg2-binary for
+#    Postgres are already in requirements.txt, not here) --
+# celery>=5.4
+# redis>=5.0
